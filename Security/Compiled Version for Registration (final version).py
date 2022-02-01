@@ -53,11 +53,11 @@ hashedPasswordOutput = hashPassword(joinCombine1, keyString, letters)
 # user information for database
 transfer_titles_to_DB = ['username', 'salt', 'key', 'hashed pass', 'email']
 transfer_data_to_DB = [username, salt, keyString, hashedPasswordOutput, email]              
-with open('../Sensitive Database.csv', 'w', newline='') as SensitiveDatabase:
+with open('Sensitive Database.csv', 'w', newline='') as SensitiveDatabase:
     transfer = csv.writer(SensitiveDatabase)
     transfer.writerow(transfer_titles_to_DB) # appends everytime, need to fix so only appears once / append user info only
     transfer.writerow(transfer_data_to_DB)
 
 # print user information from DB
-SensitiveDatabase = pandas.read_csv('../Sensitive Database.csv')
+SensitiveDatabase = pandas.read_csv('Sensitive Database.csv')
 print(SensitiveDatabase)

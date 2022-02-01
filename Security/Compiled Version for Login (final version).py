@@ -15,7 +15,7 @@ userInput()
 
 # retrieves database information
 data_list = []
-with open('../Sensitive Database.csv', 'r', newline='') as SensitiveDatabase:
+with open('Sensitive Database.csv', 'r', newline='') as SensitiveDatabase:
     reader = csv.reader(SensitiveDatabase)
     for row in reader:
         data_list.append(row)
