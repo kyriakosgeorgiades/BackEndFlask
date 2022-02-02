@@ -1,4 +1,18 @@
+venv/
+
+*.pyc
+__pycache__/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+dist/
+build/
+*.egg-info/
+
 /AI/Car details v3.csv
 /user_car_perict.sav
 /AI/final_version/
-/__pycache__
