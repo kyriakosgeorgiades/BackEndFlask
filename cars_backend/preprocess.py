@@ -1,14 +1,11 @@
-import csv
-import pickle
 
+import pickle
 import keras.models
 import sklearn
 import numpy as np
 from keras.engine.training_generator_v1 import predict_generator
 from keras_preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import OrdinalEncoder
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocess_input
 import pandas as pd
 
 
@@ -17,7 +14,6 @@ def prepro(features):
     model = pickle.load(open('user_car_perict.sav', 'rb'))
     data = []
     df = pd.json_normalize(features)
-    print(df.head())
     enc = OrdinalEncoder()
     df["fuel"] = enc.fit_transform(df[["fuel"]])
     df["seller_type"] = enc.fit_transform(df[["seller_type"]])
@@ -55,11 +51,8 @@ def pic_prepro(pic):
         batch_size=1,
         shuffle=False
     )
-    print("I am train! ", train)
     prediction = model.predict_generator(train,  verbose=1)
     cl = np.round(prediction)
-    print("TEST???")
-    print(cl)
     prediction = np.argmax(cl[0])
     # pic = image.smart_resize(pic, (224, 224))
     # img_array = image.img_to_array(pic)
@@ -69,3 +62,4 @@ def pic_prepro(pic):
     # car_class = model.predict(img_preprocessed)
     # prediction = np.argmax(car_class[0])
     return prediction
+

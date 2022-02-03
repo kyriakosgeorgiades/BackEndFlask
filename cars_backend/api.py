@@ -9,7 +9,6 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_cors import CORS, cross_origin
 from cars_backend.preprocess import prepro, pic_prepro
-
 from cars_backend.db import get_db
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -25,22 +24,24 @@ with open('AI/names.csv', newline='') as Cars:
 @bp.route("/usedCarPrice", methods=["POST"])
 @cross_origin()
 def used_car_price():
-    features = request.get_json()
-    print("Car features: ", features)
-    price = prepro(features)
-    print("Predicted price: ", price)
-    data = {'Price': price}
-    # TODO: try catch block, send back error on catch
-    return jsonify(data), 200
+    try:
+        features = request.get_json()
+        print("Car features: ", features)
+        price = prepro(features)
+        print("Predicted price: ", price)
+        data = {'Price': price}
+        return jsonify(data), 200
+    except:
+        return "Missing Value", 404
 
 
 @bp.route('/searchCarAI', methods=['POST'])
 def search_car_ai():
     picture = request.files['test']
     img = Image.open(picture)
-    img.save("../AI/Temp_pics/pics/prediction.png", "")
+    img.save("AI/Temp_pics/pics/prediction.png")
     print(picture)
     result = pic_prepro(img)
     print(class_names[result])
-    os.remove("../AI/Temp_pics/pics/prediction.png")
+    os.remove("AI/Temp_pics/pics/prediction.png")
     return class_names[result]
