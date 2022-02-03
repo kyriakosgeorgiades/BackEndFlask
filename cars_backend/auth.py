@@ -98,17 +98,22 @@ def registerHash():
 @bp.route("/loginHash", method=("GET", "Post"))
 def loginHash():
 
-    ''' 'Retrieve DB Information' Needs to specifically get DB Info - Needs Update '''
+    email = request.form["email"]
+    password = request.form["password"]
+    
+    db.execute("SELECT * FROM (email, keyString, salt, hashed_password) "
+               "VALUES (?, ?, ?, ?, 'test')",
+                (email, keyString, salt, hashed_password),
+    )
     # Retrieve DB information 
-    email = user_input_email
-    password =user_input_password
-    database_email = DB_email
-    database_hashed_password = DB_hashed_password
-    database_hash_key = DB_hash_key
-    database_salt = DB_salt
+    user_email = email
+    user_password = password
+    database_hashed_password = hashed_password
+    database_hash_key = keyString
+    database_salt = salt
 
     # Combines Salt & Password
-    combineSalt_password = [database_salt, password]
+    combineSalt_password = [database_salt, user_password]
     joinCombine1 = ''.join(combineSalt_password)
 
     # Hashs the Password
