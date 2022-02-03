@@ -27,7 +27,7 @@ def prepro(features):
     price = price * 0.0099
     val = np.float32(price)
     price = val.item()
-    price = round(price, 2)
+    price = int(round(price))
     print("THIS IS THE PRICE")
     print(price)
     return price
