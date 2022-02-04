@@ -41,7 +41,7 @@ def register():
                 upperLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 lowerLetters = 'abcdefghijklmnopqrstuvwxyz'
                 numbers = '0123456789'
-    
+
                 character_bank = [upperLetters, lowerLetters, numbers]
                 alphanumeric = ''.join(character_bank)
 
@@ -67,17 +67,18 @@ def register():
                 order = [letters.index(char.lower()) for char in joinCombine1]
                 hashed_password = (''.join(keyString[alpha] for alpha in order))
 
-                 # Commits Registration Information To DB
+                # Commits Registration Information To DB
                 db.execute("INSERT INTO user (first_name, last_name, email, hash_key, salt, hashed_password) "
                            "VALUES (?, ?, ?, ?, ?, ?)",
                            (first_name, last_name, email, keyString, salt, hashed_password),
-                )
+                           )
                 db.commit()
 
             except db.IntegrityError:
                 return "Email already registered.", 401
             else:
                 return "Registration successful", 200
+
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
@@ -116,6 +117,7 @@ def login():
             return "Login Accepted", 200
         else:
             return "Login Failure", 401
+
 
 @bp.route("/logout")
 def logout():
