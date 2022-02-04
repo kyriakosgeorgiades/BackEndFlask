@@ -32,12 +32,48 @@ def register():
 
         if error is None:
             try:
-                db.execute(
-                    "INSERT INTO user (first_name, last_name, email, hashed_password, salt) "
-                    "VALUES (?, ?, ?, ?, 'test')",
-                    (first_name, last_name, email, generate_password_hash(password)),
+                letters = 'abcdefghijklmnopqrstuvwxyz@.'
+
+                email = request.form["email"]
+                password = request.form["password"]
+
+                # Random Key Generation
+                upperLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                lowerLetters = 'abcdefghijklmnopqrstuvwxyz'
+                numbers = '0123456789'
+    
+                character_bank = [upperLetters, lowerLetters, numbers]
+                alphanumeric = ''.join(character_bank)
+
+                generated = []
+                for i in range(0, 32):
+                    randomiser = random.choice(alphanumeric)
+                    generated.append(randomiser)
+                join = ''.join(generated)
+                keyString = join
+
+                # Random Salt Generation
+                character_list = []
+                for i in range(0, 16):
+                    randomiser = random.choice(letters)
+                    character_list.append(randomiser)
+                salt = ''.join(character_list)
+
+                # Combine Salt & Password
+                combineSalt_password = [salt, password]
+                joinCombine1 = ''.join(combineSalt_password)
+
+                # Hashes the Password
+                order = [letters.index(char.lower()) for char in joinCombine1]
+                hashed_password = (''.join(keyString[alpha] for alpha in order))
+
+                 # Commits Registration Information To DB
+                db.execute("INSERT INTO user (first_name, last_name, email, hash_key, salt, hashed_password) "
+                           "VALUES (?, ?, ?, ?, ?, ?)",
+                           (first_name, last_name, email, keyString, salt, hashed_password),
                 )
                 db.commit()
+
             except db.IntegrityError:
                 error = f"User {first_name} is already registered."
             else:
@@ -57,13 +93,38 @@ def login():
         print("Email: ", email)
         print("Password: ", password)
 
-        db = get_db()
-        error = None
-        user = db.execute(
-            'SELECT * FROM user WHERE email = ?', (email,)
-        ).fetchone()
 
-        print("User object: ", user)
+        email = request.form["email"]
+        password = request.form["password"]
+
+        db.execute("SELECT * FROM (email, hash_key, salt, hashed_password) "
+                   "VALUES (?, ?, ?, ?)",
+                  (email, keyString, salt, hashed_password),
+        )
+    
+        # Retrieve DB information 
+        user_email = email
+        user_password = password
+        database_hashed_password = hashed_password
+        database_hash_key = keyString
+        database_salt = salt
+
+        # Combines Salt & Password
+        combineSalt_password = [database_salt, user_password]
+        joinCombine1 = ''.join(combineSalt_password)
+
+        # Hashs the Password
+        order = [letters.index(char.lower()) for char in joinCombine1]
+        hashed_password = (''.join(database_hash_key[alpha] for alpha in order))
+
+        # Compares User Inputted Password to DB for Login
+        if hashed_password == database_hashed_password:
+            print("Login Successful", "\n")
+            return "Login Accepted"
+        if hashed_password != database_hashed_password:
+            print("Login Unsuccessful", "\n")
+            return "Login Failure"
+
 
         if user is None:
             error = "Incorrect username."
