@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"first_name"	,
 	"last_name"	,
 	"email"	,
+	"hash_key" ,
 	"hashed_password"	,
 	"salt"
 );

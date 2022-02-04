@@ -1,9 +1,9 @@
-import functools, numpy, string
+import functools
+import random
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from cars_backend.db import get_db
 
@@ -75,14 +75,9 @@ def register():
                 db.commit()
 
             except db.IntegrityError:
-                error = f"User {first_name} is already registered."
+                return "Email already registered.", 401
             else:
-                return redirect(url_for("auth.login"))
-
-        flash(error)
-
-    return render_template('auth/register.html')
-
+                return "Registration successful", 200
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
@@ -90,56 +85,37 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
 
-        print("Email: ", email)
-        print("Password: ", password)
+        db = get_db()
 
+        user = db.execute(
+            'SELECT * FROM user WHERE email = ?', (email,)
+        ).fetchone()
 
-        email = request.form["email"]
-        password = request.form["password"]
+        if user is None:
+            return "Incorrect email", 401
 
-        db.execute("SELECT * FROM (email, hash_key, salt, hashed_password) "
-                   "VALUES (?, ?, ?, ?)",
-                  (email, keyString, salt, hashed_password),
-        )
-    
-        # Retrieve DB information 
-        user_email = email
-        user_password = password
-        database_hashed_password = hashed_password
-        database_hash_key = keyString
-        database_salt = salt
+        letters = 'abcdefghijklmnopqrstuvwxyz@.'
+
+        # Retrieve DB information
+        database_hashed_password = user["hashed_password"]
+        database_hash_key = user["hash_key"]
+        database_salt = user["salt"]
 
         # Combines Salt & Password
-        combineSalt_password = [database_salt, user_password]
+        combineSalt_password = [database_salt, password]
         joinCombine1 = ''.join(combineSalt_password)
 
-        # Hashs the Password
+        # Hashes the Password
         order = [letters.index(char.lower()) for char in joinCombine1]
         hashed_password = (''.join(database_hash_key[alpha] for alpha in order))
 
         # Compares User Inputted Password to DB for Login
         if hashed_password == database_hashed_password:
-            print("Login Successful", "\n")
-            return "Login Accepted"
-        if hashed_password != database_hashed_password:
-            print("Login Unsuccessful", "\n")
-            return "Login Failure"
-
-
-        if user is None:
-            error = "Incorrect username."
-        elif not check_password_hash(user["hashed_password"], password):
-            error = "Incorrect password."
-
-        if error is None:
             session.clear()
             session["user_id"] = user["user_id"]
-            return redirect(url_for("auth.login"))
-
-        flash(error)
-
-    return render_template("auth/login.html")
-
+            return "Login Accepted", 200
+        else:
+            return "Login Failure", 401
 
 @bp.route("/logout")
 def logout():
