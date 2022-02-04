@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"email"	,
 	"hash_key" ,
 	"hashed_password"	,
-	"salt"
+	"salt" ,
+	"is_admin" BOOLEAN DEFAULT 0
 );
 DROP TABLE IF EXISTS "car_in_order";
 CREATE TABLE IF NOT EXISTS "car_in_order" (

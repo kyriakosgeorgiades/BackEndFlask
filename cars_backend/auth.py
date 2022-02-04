@@ -2,8 +2,9 @@ import functools
 import random
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
+from flask_cors import cross_origin
 
 from cars_backend.db import get_db
 
@@ -11,6 +12,7 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @bp.route("/register", methods=("GET", "POST"))
+@cross_origin()
 def register():
     if request.method == 'POST':
         first_name = request.form["first_name"]
@@ -75,12 +77,13 @@ def register():
                 db.commit()
 
             except db.IntegrityError:
-                return "Email already registered.", 401
+                return jsonify({"message": "Email already registered", "status": 401})
             else:
-                return "Registration successful", 200
+                return jsonify({"message": "Registration successful", "status": 200})
 
 
 @bp.route("/login", methods=("GET", "POST"))
+@cross_origin()
 def login():
     if request.method == "POST":
         email = request.form["email"]
@@ -114,9 +117,9 @@ def login():
         if hashed_password == database_hashed_password:
             session.clear()
             session["user_id"] = user["user_id"]
-            return "Login Accepted", 200
+            return jsonify({"user_id": session["user_id"], "status": 200})
         else:
-            return "Login Failure", 401
+            return jsonify({"message": "Invalid credentials", "status": 401})
 
 
 @bp.route("/logout")
