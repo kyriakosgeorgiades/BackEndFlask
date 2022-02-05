@@ -15,10 +15,11 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 @cross_origin()
 def register():
     if request.method == 'POST':
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
-        email = request.form["email"]
-        password = request.form["password"]
+        data = request.get_json()
+        first_name = data["first_name"]
+        last_name = data["last_name"]
+        email = data["email"]
+        password = data["password"]
 
         db = get_db()
         error = None
@@ -35,9 +36,6 @@ def register():
         if error is None:
             try:
                 letters = 'abcdefghijklmnopqrstuvwxyz@.'
-
-                email = request.form["email"]
-                password = request.form["password"]
 
                 # Random Key Generation
                 upperLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -86,8 +84,9 @@ def register():
 @cross_origin()
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        data = request.get_json()
+        email = data["email"]
+        password = data["password"]
 
         db = get_db()
 
@@ -96,7 +95,7 @@ def login():
         ).fetchone()
 
         if user is None:
-            return "Incorrect email", 401
+            return jsonify({"message": "Invalid credentials", "status": 401})
 
         letters = 'abcdefghijklmnopqrstuvwxyz@.'
 
@@ -117,7 +116,8 @@ def login():
         if hashed_password == database_hashed_password:
             session.clear()
             session["user_id"] = user["user_id"]
-            return jsonify({"user_id": session["user_id"], "status": 200})
+            session["email"] = user["email"]
+            return jsonify({"user_id": session["user_id"], "email": session["email"], "status": 200})
         else:
             return jsonify({"message": "Invalid credentials", "status": 401})
 

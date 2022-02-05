@@ -37,7 +37,7 @@ def used_car_price():
 
 @bp.route('/searchCarAI', methods=['POST'])
 def search_car_ai():
-    picture = request.files['test']
+    picture = request.files['file']
     img = Image.open(picture)
     img.save("AI/Temp_pics/pics/prediction.png")
     print(picture)
