@@ -67,22 +67,22 @@ def find_similar():
     if request.method == 'GET':
         db = get_db()
         car_id = request.args.get("id")
-
+        car_id = "11"
         try:
-            cars = db.execute('SELECT * FROM car WHERE car_id = ?', car_id).fetchone()
+            cars = db.execute('SELECT * FROM car WHERE car_id = ?', (car_id,)).fetchone()
 
             brand = cars["brand"]
-            economy = float(cars["fuel_consumption"])
-            mileage = int(cars["km_driven"].replace(',', ''))
-            bhp = int(cars["max_power"])
-            price = int(cars["price"].replace(',', ''))
-            year = int(cars["year"])
-            engine = float(cars["engine"])
+            economy = (cars["fuel_consumption"].replace('.', ''))
+            mileage = cars["km_driven"].replace(',', '')
+            bhp = cars["max_power"]
+            price = cars["price"].replace(',', '')
+            year = cars["year"]
+            engine = (cars["engine"].replace('.', ''))
 
             result = []
 
             # economical alternatives are: smaller engine, higher economy, similar year, similar price
-            cars = db.execute('SELECT * FROM car WHERE engine < ? AND fuel_consumption > ? AND year >= ? AND price < ?', (engine, economy, year-2, price+5000)).fetchall()
+            cars = db.execute('SELECT * FROM car WHERE engine < ? AND fuel_consumption > ? AND year >= ? AND price < ?', (engine, economy, str(int(year)-2), str(int(price)+5000))).fetchall()
 
             for row in cars:
                 row = dict(row)
@@ -92,7 +92,7 @@ def find_similar():
                 result.append(row)
 
             # value alternatives are: smaller price, lower mileage, similar year
-            cars = db.execute('SELECT * FROM car WHERE price < ? AND km_driven < ? AND year >= ?', (price, mileage, year-1)).fetchall()
+            cars = db.execute('SELECT * FROM car WHERE price < ? AND km_driven < ? AND year >= ?', (price, mileage, str(int(year)-1))).fetchall()
 
             for row in cars:
                 row = dict(row)
@@ -102,7 +102,7 @@ def find_similar():
                 result.append(row)
 
             # performance alternatives are: higher engine, higher bhp, similar year, similar price
-            cars = db.execute('SELECT * FROM car WHERE engine > ? AND max_power > ? AND year >= ? AND price < ?', (engine, bhp, year-2, price+5000)).fetchall()
+            cars = db.execute('SELECT * FROM car WHERE engine > ? AND max_power > ? AND year >= ? AND price < ?', (engine, bhp, str(int(year)-2), str(int(price)+5000))).fetchall()
 
             for row in cars:
                 row = dict(row)
@@ -112,7 +112,7 @@ def find_similar():
                 result.append(row)
 
             # similar alternatives are: same brand, lower price, similar year
-            cars = db.execute('SELECT * FROM car WHERE brand = ? AND price < ? AND year >= ?', (brand, price, year-2)).fetchall()
+            cars = db.execute('SELECT * FROM car WHERE brand = ? AND price < ? AND year >= ?', (brand, price, str(int(year)-2))).fetchall()
 
             for row in cars:
                 row = dict(row)
