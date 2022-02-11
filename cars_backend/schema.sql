@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"user_id" INTEGER PRIMARY KEY,
 	"first_name"	,
 	"last_name"	,
-	"email"	,
+	"email"	UNIQUE,
 	"hash_key" ,
 	"hashed_password"	,
 	"salt" ,

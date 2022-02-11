@@ -7,6 +7,7 @@ from cars_backend.db import get_db
 # Defines the File Name for Route Purposes
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+
 # Defines the Registration Function with Hashing Algorithm
 @bp.route("/register", methods=("GET", "POST"))
 @cross_origin()
@@ -19,6 +20,7 @@ def register():
         email = data["email"]
         password = data["password"]
 
+        is_admin = 0
         if (first_name == "admin") or (last_name == "admin") or (email == "admin@gmail.com"):
             is_admin = 1
 
@@ -82,6 +84,7 @@ def register():
             else:
                 return jsonify({"message": "Registration successful", "status": 200})
 
+
 # Defines the Login Function with Hashing Algorithm
 @bp.route("/login", methods=("GET", "POST"))
 @cross_origin()
@@ -119,15 +122,18 @@ def login():
             session.clear()
             session["user_id"] = user["user_id"]
             session["email"] = user["email"]
-            return jsonify({"user_id": session["user_id"], "email": session["email"], "is_admin": user["is_admin"], "status": 200})
+            return jsonify(
+                {"user_id": session["user_id"], "email": session["email"], "is_admin": user["is_admin"], "status": 200})
         else:
             return jsonify({"message": "Invalid credentials", "status": 401})
+
 
 # Defines the Logout Function
 @bp.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
 
 # Defines the User Logged-In Function
 @bp.before_app_request
@@ -140,6 +146,7 @@ def load_logged_in_user():
             'SELECT * FROM user WHERE user_id = ?', (user_id,)
         ).fetchone()
 
+
 # Defines the Login Required Function else user cannot access
 def login_required(view):
     @functools.wraps(view)
@@ -147,4 +154,5 @@ def login_required(view):
         if g.user is None:
             return redirect(url_for("auth.login"))
         return view(**kwargs)
+
     return wrapped_view
