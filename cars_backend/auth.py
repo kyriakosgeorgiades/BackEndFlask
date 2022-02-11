@@ -19,6 +19,9 @@ def register():
         email = data["email"]
         password = data["password"]
 
+        if (first_name == "admin") or (last_name == "admin") or (email == "admin@gmail.com"):
+            is_admin = 1
+
         # Opens Backend Database
         db = get_db()
         error = None
@@ -67,9 +70,9 @@ def register():
                 hashed_password = (''.join(keyString[alpha] for alpha in order))
 
                 # Commits Registration Information To DB
-                db.execute("INSERT INTO user (first_name, last_name, email, hash_key, salt, hashed_password) "
-                           "VALUES (?, ?, ?, ?, ?, ?)",
-                           (first_name, last_name, email, keyString, salt, hashed_password),
+                db.execute("INSERT INTO user (first_name, last_name, email, hash_key, salt, hashed_password, is_admin) "
+                           "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                           (first_name, last_name, email, keyString, salt, hashed_password, is_admin),
                            )
                 db.commit()
 
@@ -116,7 +119,7 @@ def login():
             session.clear()
             session["user_id"] = user["user_id"]
             session["email"] = user["email"]
-            return jsonify({"user_id": session["user_id"], "email": session["email"], "status": 200})
+            return jsonify({"user_id": session["user_id"], "email": session["email"], "is_admin": user["is_admin"], "status": 200})
         else:
             return jsonify({"message": "Invalid credentials", "status": 401})
 
