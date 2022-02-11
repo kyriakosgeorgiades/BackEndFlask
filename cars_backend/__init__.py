@@ -42,4 +42,7 @@ def create_app(test_config=None):
     from . import api
     app.register_blueprint(api.bp)
 
+    from . import car
+    app.register_blueprint(car.bp)
+
     return app

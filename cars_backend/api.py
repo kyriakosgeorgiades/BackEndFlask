@@ -88,3 +88,5 @@ def search_car_ai():
         print(err)
         status_code = 500
         return jsonify(str(err)), status_code
+
+
