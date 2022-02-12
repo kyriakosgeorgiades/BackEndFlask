@@ -123,7 +123,7 @@ def login():
             session["user_id"] = user["user_id"]
             session["email"] = user["email"]
             return jsonify(
-                {"user_id": session["user_id"], "email": session["email"], "is_admin": user["is_admin"], "status": 200})
+                {"user_id": session["user_id"], "email": session["email"], "name": user["first_name"], "is_admin": user["is_admin"], "status": 200})
         else:
             return jsonify({"message": "Invalid credentials", "status": 401})
 
