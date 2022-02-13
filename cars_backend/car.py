@@ -13,32 +13,35 @@ from cars_backend.db import get_db
 bp = Blueprint("car", __name__, url_prefix="/car")
 
 
-def dec_serializer(o):
-    if isinstance(o, decimal.Decimal):
-        return float(o)
-
-
 @bp.route("/getAll", methods=["GET"])
 @cross_origin()
 def get_all_cars():
+    """ Route called to return all car records
+        returns: JSON list of cars and status code
+        exception: JSON error message and status code
+    """
     if request.method == 'GET':
+        # connects with database
         db = get_db()
 
         try:
+            # select all car info from database
             cars = db.execute('SELECT * FROM car').fetchmany(12)
 
+            # adds result rows returned from sql query to list
             result = []
             for row in cars:
                 result.append(dict(row))
-            # print(result[0]['price'])
 
+            # if no car database has no records
             if cars is None:
                 return jsonify({"message": "Cars database does not exist", "status": 401})
             else:
                 return jsonify({"cars": result, "status": 200})
 
+        # returns error code and message if exception occurs
         except db.IntegrityError:
-            return jsonify({"message": "System error", "status": 401})
+            return jsonify({"message": "Database processing error", "status": 401})
 
 
 @bp.route("/getID", methods=["POST"])
@@ -76,22 +79,32 @@ def get_name():
         return jsonify({"message": "System error", "status": 401})
 
 
+
 @bp.route("/view/<car_id>", methods=["GET"])
 @cross_origin()
 def view_car(car_id):
+    """ Route called to view a single car by ID
+        returns: JSON cars info dictionary and status code
+        exception: JSON error message and status code
+    """
     if request.method == 'GET':
+        # connects with database
         db = get_db()
 
         try:
+            # select car record by ID from database
             cars = db.execute('SELECT * FROM car WHERE car_id = ?', (car_id,)).fetchone()
 
+            # stores the record as a dictionary list
             result = [dict(cars)]
 
+            # if no car database has no records
             if cars is None:
                 return jsonify({"message": "Car by given ID does not exist", "status": 401})
             else:
                 return jsonify({"cars": result, "status": 200})
 
+        # returns error code and message if exception occurs
         except db.IntegrityError:
             return jsonify({"message": "System error", "status": 401})
 
@@ -99,13 +112,21 @@ def view_car(car_id):
 @bp.route("/similar", methods=["GET"])
 @cross_origin()
 def find_similar():
+    """ Route called to view similar cars of car by ID
+        returns: JSON 2 cars list and status code
+        exception: JSON error message and status code
+    """
     if request.method == 'GET':
+        # connects with database
         db = get_db()
+        # gets the id from parameters
         car_id = request.args.get("id")
 
         try:
+            # select car record by ID from database
             cars = db.execute('SELECT * FROM car WHERE car_id = ?', (car_id,)).fetchone()
 
+            # stores returned car info as local variables
             brand = cars["brand"]
             economy = float(cars["fuel_consumption"])
             mileage = int(cars["km_driven"])
@@ -114,12 +135,14 @@ def find_similar():
             year = int(cars["year"])
             engine = float(cars["engine"])
 
+            # defines empty result list
             result = []
 
             # economical alternatives are: smaller engine, higher economy, similar year, similar price
             cars = db.execute('SELECT * FROM car WHERE engine < ? AND fuel_consumption > ? AND year >= ? AND price < ?',
                               (engine, economy, year - 2, price + 5000)).fetchall()
 
+            # for returned rows from SQL query, appends extra info and adds to result list
             for row in cars:
                 row = dict(row)
                 row["suggestion_title"] = "Better Economy Alternative"
@@ -131,6 +154,7 @@ def find_similar():
             cars = db.execute('SELECT * FROM car WHERE price < ? AND km_driven < ? AND year >= ?',
                               (price, mileage, year - 1)).fetchall()
 
+            # for returned rows from SQL query, appends extra info and adds to result list
             for row in cars:
                 row = dict(row)
                 row["suggestion_title"] = "Better Value Alternative"
@@ -142,6 +166,7 @@ def find_similar():
             cars = db.execute('SELECT * FROM car WHERE engine > ? AND max_power > ? AND year >= ? AND price < ?',
                               (engine, bhp, year - 2, price + 5000)).fetchall()
 
+            # for returned rows from SQL query, appends extra info and adds to result list
             for row in cars:
                 row = dict(row)
                 row["suggestion_title"] = "Higher Performance Alternative"
@@ -153,19 +178,23 @@ def find_similar():
             cars = db.execute('SELECT * FROM car WHERE brand == ? AND price < ? AND year >= ?',
                               (brand, price, year - 2)).fetchall()
 
+            # for returned rows from SQL query, appends extra info and adds to result list
             for row in cars:
                 row = dict(row)
                 row["suggestion_title"] = "Similar Vehicle"
                 row["suggestion_reason"] = "This car is very similar to the one being viewed, at a lower price."
                 result.append(row)
 
+            # if more than 2 results within list, takes 2 random samples to return
             if len(result) > 2:
                 result = random.sample(result, 2)
 
+            # if no car database has no records
             if cars is None:
                 return jsonify({"message": "Cars database does not exist", "status": 401})
             else:
                 return jsonify({"cars": result, "status": 200})
 
+        # returns error code and message if exception occurs
         except db.IntegrityError:
             return jsonify({"message": "System error", "status": 401})
