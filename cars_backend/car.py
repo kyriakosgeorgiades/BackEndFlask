@@ -1,10 +1,7 @@
-import functools
 import random
-import json
-import decimal
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
+    Blueprint, request, jsonify
 )
 from flask_cors import cross_origin
 
