@@ -159,4 +159,4 @@ random_test = [2015, 25000, 3.0, 1.0, 1.0,
 random_test = np.reshape(random_test, (1, -1))
 print(random_test)
 print(model.predict(random_test))
-print(x.head().to_string)
+
