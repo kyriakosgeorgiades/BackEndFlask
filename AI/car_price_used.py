@@ -1,26 +1,30 @@
+"""
+Creation of the machine learning model for price prediction
+"""
 import pickle
 import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
-
-
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
-
 from sklearn.exceptions import DataConversionWarning
+from sklearn.linear_model import Ridge
+from sklearn.metrics import r2_score
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import OrdinalEncoder
+# pylint: disable=E1101
+# pylint: disable=E1136
+# pylint: disable=E1137
 
 warnings.filterwarnings("ignore", category=DataConversionWarning)
 
 df = pd.read_csv('Car details v3.csv')
 print(df.head())
 
-# To understand the data types which are required to be transfomred
+# To understand the data types which are required to be transformed
 print(df.info())
 
 print(df.describe())
@@ -66,75 +70,69 @@ X_train, X_test, y_train, y_test = train_test_split(
     x, y, test_size=0.2, random_state=25)
 print("TRAINING")
 print(X_train.to_string())
+# Applying linear regression
 lin_reg = Ridge()
 lin_reg.fit(X_train, y_train)
 y_pred = lin_reg.predict(X_test)
-print(
-    'R2 Score for Linear Regression on test data: {}'.format(
-        np.round(
-            r2_score(
-                y_test,
-                y_pred),
-            3)))
+print(f"R2 Score for Linear Regression on test data: {np.round(r2_score(y_test,y_pred) ,3)}")
 
 plt.scatter(y_test, y_pred)
 plt.show()
+n_estimators = []
+max_depth = []
+# Creating a list of range for the n_estimators for RandomSearch
+for x in range(200, 2001, 200):
+    n_estimators.append(x)
+# Creating a list of range for max_depth for RandomSearch
+for x in range(10, 101, 10):
+    max_depth.append(x)
 
-n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
 max_features = ['auto', 'sqrt']
-max_depth = [int(x) for x in np.linspace(10, 100, num=10)]
 bootstrap = [True, False]
 random_grid = {'n_estimators': n_estimators,
                'max_features': max_features,
                'max_depth': max_depth,
                'bootstrap': bootstrap}
 
-rf = RandomForestRegressor()
-rf_random = RandomizedSearchCV(
-    estimator=rf,
+model = RandomForestRegressor()
+tunning = RandomizedSearchCV(
+    estimator=model,
     param_distributions=random_grid,
     n_iter=20,
-    cv=3,
+    cv=10,
     verbose=2,
-    random_state=42,
+    random_state=36,
     n_jobs=-1)
 # Fit the random search model
-rf_random.fit(X_train, y_train)
-print(rf_random.best_params_, rf_random.best_score_)
+tunning.fit(X_train, y_train.values.ravel())
+print(tunning.best_params_, tunning.best_score_)
 
-rf = RandomForestRegressor(**rf_random.best_params_)
-rf.fit(X_train.values, y_train.values)
+model = RandomForestRegressor(**tunning.best_params_)
+model.fit(X_train.values, y_train.values.ravel())
 
 scores = cross_val_score(
-    rf,
+    model,
     X_train.values,
     y_train.values,
     cv=5,
     scoring='r2')
-print('R2 Score CV for RandomForest = {}'.format(np.round(scores.mean(), 2)))
+print(f"R2 Score CV for RandomForest =  {(np.round(scores.mean(), 2))}")
 
-y_pred = rf.predict(X_train.values)
-print(
-    'RandomForestRegressor results on train data: R2 Score: {}  - MSE Score: {}'.format(
-        r2_score(
-            y_train, y_pred), mean_squared_error(
-            y_train, y_pred)))
+y_pred = model.predict(X_train.values)
+print(f"RandomForestRegressor results on train data: R2 Score: {(r2_score(y_train, y_pred))}")
 
-y_pred = rf.predict(X_test.values)
-print(
-    'RandomForestRegressor results on train data: R2 Score: {}  - MSE Score: {}'.format(
-        r2_score(
-            y_test, y_pred), mean_squared_error(
-            y_test, y_pred)))
+y_pred = model.predict(X_test.values)
+print(f"RandomForestRegressor results on train data: R2 Score: {(r2_score(y_test, y_pred))}")
 plt.figure(figsize=(12, 8))
 plt.scatter(y_test, y_pred)
 plt.show()
-print("I AM PRICE OF FIRST TEST")
+print("Test price")
 print(y_test)
 print(y_pred[2])
 
 FILENAME = "../user_car_perict.sav"
-pickle.dump(rf, open(FILENAME, 'wb'))
+pickle.dump(model, open(FILENAME, 'wb'))
+
 
 print(X_test.info())
 print(X_test['seller_type'].unique())
@@ -160,5 +158,5 @@ random_test = [2015, 25000, 3.0, 1.0, 1.0,
 # random_test = np.reshape(random_test, (1,-1)).T
 random_test = np.reshape(random_test, (1, -1))
 print(random_test)
-print(rf.predict(random_test))
+print(model.predict(random_test))
 print(x.head().to_string)
