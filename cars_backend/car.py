@@ -65,7 +65,7 @@ def get_name():
         size = len(brand_name[1])
         # Model broken down from the string
         model = brand_name[1][:size - 5]
-        # Query to fecth the ID of the car to be returned
+        # Query to fetch the ID of the car to be returned
         car = db.execute('SELECT car_id FROM car WHERE brand = ? AND model = ?', (brand, model)).fetchone()
 
         return jsonify({"ID": car["car_id"], "status": 200})
@@ -74,7 +74,6 @@ def get_name():
         return jsonify({"message": "System error", "status": 401})
     except db.IntegrityError:
         return jsonify({"message": "System error", "status": 401})
-
 
 
 @bp.route("/view/<car_id>", methods=["GET"])
