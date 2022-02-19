@@ -102,11 +102,11 @@ def view_car(car_id):
             else:
                 # Call the API to find a video of the car
                 try:
-                    youtube_api.find_car_video(result[0])
+                    video_link = youtube_api.find_car_video(result[0])
                 except HttpError as e:
                     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
-
-                return jsonify({"cars": result, "status": 200})
+                else:
+                    return jsonify({"cars": result, "video_link": video_link, "status": 200})
 
         # returns error code and message if exception occurs
         except db.IntegrityError:
