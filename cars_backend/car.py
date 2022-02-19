@@ -4,7 +4,9 @@ from flask import (
     Blueprint, request, jsonify
 )
 from flask_cors import cross_origin
+from googleapiclient.errors import HttpError
 
+from cars_backend import youtube_api
 from cars_backend.db import get_db
 
 bp = Blueprint("car", __name__, url_prefix="/car")
@@ -98,6 +100,12 @@ def view_car(car_id):
             if cars is None:
                 return jsonify({"message": "Car by given ID does not exist", "status": 401})
             else:
+                # Call the API to find a video of the car
+                try:
+                    youtube_api.find_car_video(result[0])
+                except HttpError as e:
+                    print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
+
                 return jsonify({"cars": result, "status": 200})
 
         # returns error code and message if exception occurs
