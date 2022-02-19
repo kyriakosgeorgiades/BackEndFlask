@@ -21,6 +21,6 @@ def find_car_video(car):
 
     top_video = search_response.get("items", [])[0]
 
-    link = "https://www.youtube.com/watch?v=" + str(top_video["id"]["videoId"])
+    link = "https://www.youtube.com/embed" + str(top_video["id"]["videoId"])
     print(link + " " + top_video["snippet"]["title"])
     return link
