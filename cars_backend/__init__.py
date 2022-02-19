@@ -1,9 +1,7 @@
 # This is the entry point to the app and contains initialization code
 
 import os
-
 from flask import Flask
-from flask_cors import CORS
 
 
 def create_app():
@@ -13,20 +11,11 @@ def create_app():
         DATABASE=os.path.join(app.instance_path, 'cars_db.sqlite'),
     )
 
-    #if test_config is None:
-        # load the instance config, if it exists, when not testing
-    #    app.config.from_pyfile('config.py', silent=True)
-    #else:
-        # load the test config if passed in
-    #    app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
+    # Create an instance folder if it doesn't exist. This will store the SQLite database.
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    #cors = CORS(app)
 
     # Connect app to database
     from . import db
