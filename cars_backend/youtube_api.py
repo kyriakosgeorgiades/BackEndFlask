@@ -1,7 +1,7 @@
 from dotenv import dotenv_values
 from googleapiclient.discovery import build
 
-# Get environment variables from .env file
+# Get environment variables from ..env file
 dotenv_vars = dotenv_values(".env")
 
 API_KEY = dotenv_vars["API_KEY"]
@@ -21,6 +21,5 @@ def find_car_video(car):
 
     top_video = search_response.get("items", [])[0]
 
-    link = "https://www.youtube.com/embed" + str(top_video["id"]["videoId"])
-    print(link + " " + top_video["snippet"]["title"])
+    link = "https://www.youtube.com/embed/" + str(top_video["id"]["videoId"])
     return link
