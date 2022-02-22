@@ -3,7 +3,6 @@ from googleapiclient.discovery import build
 
 # Get environment variables from .env file
 dotenv_vars = dotenv_values(".env")
-print(dotenv_vars)
 # API key from a Google account required to use the YouTube search API
 API_KEY = dotenv_vars["API_KEY"]
 API_VERSION = "v3"
