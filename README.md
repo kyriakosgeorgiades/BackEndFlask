@@ -19,6 +19,6 @@ Due to the models being over the size limited they are in a zip form. Please ext
 7047CEM/user_car_perict.sav
 # For the image prediction
 7047CEM/AI/final_version
-# Create 2 directories as shown
+# Create 2 directories (Temp_pics and pics) as shown
 7047CEM/AI/Temp_pics/pics
 ```
