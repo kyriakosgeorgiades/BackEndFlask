@@ -14,7 +14,8 @@ API_VERSION = "v3"
 def find_car_video(car):
     youtube = build("youtube", API_VERSION, developerKey=API_KEY)
 
-    query = str(car["brand"]) + " " + str(car["model"]) + " " + str(car["year"]) + " review"
+    query = build_query(car["brand"], car["model"], car["year"])
+
     search_response = youtube.search().list(
         q=query,
         part="id,snippet",
@@ -25,6 +26,16 @@ def find_car_video(car):
     # Get the top video by popularity from the results
     top_video = search_response.get("items", [])[0]
 
-    # Generate the embed link using the video ID
-    link = "https://www.youtube.com/embed/" + str(top_video["id"]["videoId"])
+    link = build_link(top_video["id"]["videoId"])
+    return link
+
+
+def build_query(brand, model, year):
+    query = str(brand) + " " + str(model) + " " + str(year) + " review"
+    return query
+
+
+# Generate the embed link using the video ID
+def build_link(video_id):
+    link = "https://www.youtube.com/embed/" + str(video_id)
     return link
