@@ -106,7 +106,7 @@ def view_car(car_id):
                 except HttpError as e:
                     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
                 else:
-                    warranty = "Full warranty offer: 14 months long for £374"
+                    warranty = "Warranty offer: 14 months long for £450"
                     return jsonify({"cars": result, "video_link": video_link, "warranty": warranty, "status": 200})
 
         # returns error code and message if exception occurs
