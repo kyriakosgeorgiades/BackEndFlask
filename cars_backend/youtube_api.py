@@ -31,11 +31,17 @@ def find_car_video(car):
 
 
 def build_query(brand, model, year):
+    if not brand or not model or not year:
+        raise ValueError("Invalid car information")
+
     query = str(brand) + " " + str(model) + " " + str(year) + " review"
     return query
 
 
 # Generate the embed link using the video ID
 def build_link(video_id):
+    if not video_id or len(video_id) != 11:
+        raise ValueError("Invalid video ID")
+
     link = "https://www.youtube.com/embed/" + str(video_id)
     return link
