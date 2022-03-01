@@ -38,3 +38,12 @@ def test_build_link():
 def test_build_link_exceptions(video_id):
     with pytest.raises(ValueError):
         api.build_link(video_id)
+
+
+# Integration test
+def test_find_car_video():
+    car = {"brand": "Toyota", "model": "Camry", "year": 2016}
+    link = api.find_car_video(car)
+
+    assert isinstance(link, str)  # Link must be a string
+    assert link.startswith("https://www.youtube.com/embed/qvCz5o3L02w")  # Expected link to be returned
