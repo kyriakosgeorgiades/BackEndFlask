@@ -22,7 +22,7 @@ def find_car_video(car):
     youtube = build("youtube", API_VERSION, developerKey=API_KEY)
 
     # Build the query string to search for
-    query = build_query(car["brand"], car["model"], car["year"])
+    query = build_search_query(car["brand"], car["model"], car["year"])
 
     # Make a call to the YouTube Search API
     search_response = youtube.search().list(
@@ -40,7 +40,7 @@ def find_car_video(car):
     return link
 
 
-def build_query(car_brand, car_model, car_year):
+def build_search_query(car_brand, car_model, car_year):
     """Build the search query for the car review video
 
     :param car_brand: string - brand of the car
