@@ -82,6 +82,7 @@ def get_name():
 @cross_origin()
 def view_car(car_id):
     """ Route called to view a single car by ID
+
         returns: JSON cars info dictionary and status code
         exception: JSON error message and status code
     """
@@ -102,6 +103,7 @@ def view_car(car_id):
             else:
                 # Call the API to find a video of the car
                 try:
+                    # result[0] contains the car dictionary
                     video_link = youtube_api.find_car_video(result[0])
                 except HttpError as e:
                     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))

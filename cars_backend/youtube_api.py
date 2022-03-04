@@ -1,3 +1,5 @@
+"""Connect to the YouTube Search API to find car review videos"""
+
 from dotenv import dotenv_values
 from googleapiclient.discovery import build
 
@@ -7,13 +9,16 @@ dotenv_vars = dotenv_values(".env")
 API_KEY = dotenv_vars["API_KEY"]
 API_VERSION = "v3"
 
-def find_car_video(car):
-    """Search YouTube for a review video of the car and return a link to the top video.
 
-    :param car: dictionary - contains information about the car
-    :return: string - embed link to the top video found
+def find_car_video(car):
+    """ Search YouTube for a review video of the car
+        and return a link to the top video.
+
+        :param car: dictionary - contains information about the car
+        :return: string - embed link to the top video found
     """
 
+    # Setup for the YouTube API call
     youtube = build("youtube", API_VERSION, developerKey=API_KEY)
 
     # Build the query string to search for
