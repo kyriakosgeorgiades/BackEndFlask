@@ -40,21 +40,21 @@ def find_car_video(car):
     return link
 
 
-def build_query(brand, model, year):
+def build_query(car_brand, car_model, car_year):
     """Build the search query for the car review video
 
-    :param brand: string - brand of the car
-    :param model: string - model of the car
-    :param year: int or string - car's manufacture year
+    :param car_brand: string - brand of the car
+    :param car_model: string - model of the car
+    :param car_year: int or string - car's manufacture year
     :return: string - search query for the car review video
     """
 
     # Ensure that all parameters are valid
-    if not brand or not model or not year:
+    if not car_brand or not car_model or not car_year:
         raise ValueError("Invalid car information")
 
     # Build the query using the parameters and the string literal "review"
-    query = str(brand) + " " + str(model) + " " + str(year) + " review"
+    query = str(car_brand) + " " + str(car_model) + " " + str(car_year) + " review"
     return query
 
 
