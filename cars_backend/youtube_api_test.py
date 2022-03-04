@@ -11,7 +11,7 @@ def test_build_search_query():
     query = api.build_search_query("Toyota", "Camry", 2016)
 
     assert isinstance(query, str)  # Query must be a string
-    assert query.endswith("review")  # Query must end with review
+    assert query.endswith("review")  # Query must end with the string literal "review"
     assert query.count(" ") >= 3  # Query must have at least 3 spaces
 
 
