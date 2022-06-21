@@ -22,3 +22,5 @@ Due to the models being over the size limited they are in a zip form. Please ext
 # Create 2 directories (Temp_pics and pics) as shown
 7047CEM/AI/Temp_pics/pics
 ```
+# NOTE
+As this was a group project my contribution was towards the deep learning model implemation and deployement in the backend. The related files are at directory "AI" and the backend deployment at "cars_backend/api.py" and "cars_backend/preprocess.py"
